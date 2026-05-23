@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "_comment_permissions": "Allowlist tools and MCP calls that can run without per-call confirmation. Trim aggressively — over-broad allowlists are a security hazard.",
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.producttalk.org)",
+      "Bash(python3:*)",
+      "Bash(find:*)",
+
+      "_comment_atlassian": "Read-side Atlassian calls. Write calls (createJiraIssue, editJiraIssue, createConfluencePage, updateConfluencePage) are intentionally OMITTED so they prompt for confirmation each time.",
+      "mcp__atlassian__getJiraIssue",
+      "mcp__atlassian__getJiraIssueTypeMetaWithFields",
+      "mcp__atlassian__getJiraIssueRemoteIssueLinks",
+      "mcp__atlassian__getJiraProjectIssueTypesMetadata",
+      "mcp__atlassian__searchJiraIssuesUsingJql",
+      "mcp__atlassian__getTransitionsForJiraIssue",
+      "mcp__atlassian__lookupJiraAccountId",
+      "mcp__atlassian__getConfluencePage",
+      "mcp__atlassian__getConfluencePageDescendants",
+      "mcp__atlassian__searchConfluenceUsingCql",
+      "mcp__atlassian__search",
+
+      "_comment_granola": "Read-only meeting note access.",
+      "mcp__granola__list_meetings",
+      "mcp__granola__get_meetings",
+      "mcp__granola__get_meeting_transcript",
+      "mcp__granola__query_granola_meetings",
+
+      "_comment_google": "Sheets/Drive read; explicit modify_sheet_values for the few skills that write back.",
+      "mcp__google_workspace__read_sheet_values",
+      "mcp__google_workspace__modify_sheet_values",
+      "mcp__google_workspace__get_spreadsheet_info",
+      "mcp__google_workspace__get_drive_file_content",
+
+      "_comment_amplitude": "Read-only Amplitude.",
+      "mcp__Amplitude__get_from_url",
+      "mcp__Amplitude__get_dashboard",
+      "mcp__Amplitude__query_experiment",
+      "mcp__Amplitude__query_chart",
+      "mcp__Amplitude__search",
+
+      "_comment_figma": "Read-only Figma design context.",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_screenshot"
+    ]
+  },
+
+  "_comment_hooks": "Lifecycle hooks. All hooks must exist at .claude/hooks/<filename>. Mark them executable: chmod +x .claude/hooks/*.sh",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/regression-test-stash.sh" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "python3 .claude/hooks/prose-sweep.py" },
+          { "type": "command", "command": "bash .claude/hooks/regression-test-trigger.sh" },
+          { "type": "command", "command": "bash .claude/hooks/auto-stage-pm-edits.sh" }
+        ]
+      },
+      {
+        "matcher": "mcp__atlassian__getConfluencePage|mcp__atlassian__getJiraIssue|mcp__google_workspace__get_drive_file_content|WebFetch|mcp__granola__get_meeting_transcript",
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/log-external-resource.sh" }
+        ]
+      },
+      {
+        "matcher": "mcp__atlassian__createJiraIssue|mcp__atlassian__editJiraIssue|mcp__atlassian__createConfluencePage|mcp__atlassian__updateConfluencePage",
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/jira-write-audit.sh" }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/session-brief.sh" }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/precompact-archive.sh" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash .claude/hooks/end-of-session-check.sh" }
+        ]
+      }
+    ]
+  },
+
+  "_comment_mcp": "MCP servers. Replace URLs with the ones your team uses. Remove servers you don't need to reduce noise.",
+  "mcpServers": {
+    "atlassian": {
+      "type": "sse",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    },
+    "granola": {
+      "type": "sse",
+      "url": "{{GRANOLA_MCP_URL}}"
+    },
+    "google_workspace": {
+      "type": "sse",
+      "url": "{{GOOGLE_WORKSPACE_MCP_URL}}"
+    },
+    "Amplitude": {
+      "type": "sse",
+      "url": "{{AMPLITUDE_MCP_URL}}"
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
+    }
+  }
+}

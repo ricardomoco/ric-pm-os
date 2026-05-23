@@ -1,0 +1,47 @@
+# Private workspace data — never commit these in your fork either
+# See SECURITY.md for the rationale.
+
+# Secrets and runtime config
+.env
+.env.local
+.claude/settings.local.json
+.mcp.json.local
+
+# Runtime caches, audit logs, agent memory, transcript archives
+.claude/cache/
+.claude/audit/
+.claude/transcript-archive/
+.claude/agent-memory/
+
+# Personal in-flight work
+projects/
+meetings/
+user-research/
+research/
+
+# Personal goals / current quarter (case variations)
+goals.md
+GOALS.md
+goals-*.md
+
+# Knowledge base log (auto-populated by log-external-resource hook)
+knowledge-base-reference.md
+knowledge-base-reference-*.md
+
+# Skill regression-test corpora (contain real drafts)
+.claude/skills/*/regression-corpus/
+
+# OS / editor noise
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Distribution
+dist/
+build/

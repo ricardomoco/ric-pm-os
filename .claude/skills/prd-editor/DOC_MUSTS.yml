@@ -1,0 +1,363 @@
+# DOC_MUSTS.yml
+#
+# Declarative change-type rules for the prd-editor skill.
+# Each change type is a CONTRACT. The agent must:
+#   1. Classify the proposed change as one of these types in Phase 1.
+#   2. Execute strictly within `allowed_scope` and `allowed_operations`.
+#   3. Refuse any action in `forbidden_operations`.
+#   4. Match `format_contract` for any prose added.
+#   5. PASS every item in `validation_checklist` before declaring the change done.
+#
+# When in doubt about which change type applies, ask the user. Do not invent new types.
+# All references to template sections (§Requirements, §Risks, etc.) map to
+# the canonical structure in ../prd-writer/references/template.md.
+
+add_requirement:
+  description: >
+    Append a new requirement to the Requirements section.
+    Used when the user asks to add a new behaviour, constraint, or acceptance criterion.
+  allowed_scope:
+    - "§Requirements table only"
+    - "Within the new row: Requirement, User story, Importance, Acceptance Criteria, and Notes columns"
+  allowed_operations:
+    - "Append one new row to the Requirements table"
+    - "Populate Requirement, User story, Importance, Acceptance Criteria, and Notes for the new row only"
+    - "Leave the Jira issue column blank for engineering to fill"
+  forbidden_operations:
+    - "Modify any existing requirement row (text, AC, priority, notes)"
+    - "Reformat the Requirements table (column widths, alignment, header changes, splitting/merging columns)"
+    - "Add a subheading inside §Requirements (e.g. 'New requirements after legal review')"
+    - "Reference the source of the decision in the requirement text or Notes column (no 'per legal', 'after T&S', 'as discussed')"
+    - "Add a corresponding row in §Risks, §Open Questions, §Edge Cases, or §Out of Scope unless the user explicitly requested those too"
+    - "Renumber adjacent requirements (R-001, R-002, R-003...) — append using the next free identifier"
+    - "Duplicate the requirement summary into §Executive Summary, §Objective, or §Working Hypothesis"
+  format_contract:
+    - "Acceptance Criteria use Gherkin: Given / When / Then"
+    - "Priority must be one of: P0, P0.5, P1, P2"
+    - "User story format: 'As a [role], I want [behaviour], so that [outcome]'"
+    - "Requirement column states WHAT must be true, not HOW it is implemented"
+    - "Notes column carries technical context only; no decision provenance"
+  validation_checklist:
+    - "Exactly one new row was added to §Requirements"
+    - "No existing requirement row was modified"
+    - "Notes column does not contain attribution phrases (per X, after Y, as discussed with Z, subject to W)"
+    - "Acceptance Criteria use Gherkin format with at least one Given / When / Then triplet"
+    - "No new section, subheading, callout, or appendix entry was created"
+    - "No content from this change appears in §Executive Summary, §Objective, or §Working Hypothesis"
+
+update_requirement:
+  description: >
+    Modify a single, named existing requirement (by R-ID or unambiguous reference).
+    Used when the user asks to change scope, priority, AC, or notes on a specific requirement.
+  allowed_scope:
+    - "The single named row inside §Requirements (e.g. R-003)"
+    - "Only the columns specified in the user's request (e.g. AC only, or priority only)"
+  allowed_operations:
+    - "Edit the text of the named row's Requirement, User story, Importance, Acceptance Criteria, or Notes — only the columns the user specified"
+    - "Update priority value within the allowed set (P0, P0.5, P1, P2)"
+  forbidden_operations:
+    - "Modify any OTHER row in the Requirements table"
+    - "Rewrite columns the user did not name (e.g. user asked to change AC only — do not touch Notes)"
+    - "Reformat or restyle the row (bold, italic, header changes) to signal that it changed"
+    - "Add inline tags like [UPDATED], [NEW], [CHANGED], [v2]"
+    - "Reference the source of the change in the row text"
+    - "Propagate the change into §Risks, §Open Questions, §Edge Cases without an explicit user request"
+    - "Renumber the table or change row identifiers"
+  format_contract:
+    - "Preserve Gherkin format on Acceptance Criteria"
+    - "Preserve the existing User story structure unless the user asked to change it"
+    - "Match the row's existing markdown style (no new bold, headers, or callouts added)"
+  validation_checklist:
+    - "Only the named row (e.g. R-003) was modified"
+    - "Only the columns named by the user were touched"
+    - "No inline change-tags ([UPDATED], [NEW], etc.) were added"
+    - "No source attribution was added to the row text"
+    - "Adjacent rows (R-002, R-004, etc.) are byte-identical to the pre-edit version"
+
+add_user_story:
+  description: >
+    Append a new user story. At {{COMPANY}}, user stories live INSIDE the Requirements table
+    (User story column) or in a separate User Stories subsection if the document uses one.
+    Confirm placement in Phase 1.
+  allowed_scope:
+    - "§Requirements table — User story column of an existing or new row"
+    - "OR §User Stories subsection if the document has one (rare; confirm before assuming)"
+  allowed_operations:
+    - "Add or set the User story field for one row"
+    - "Use the canonical format: 'As a [role], I want [behaviour], so that [outcome]'"
+  forbidden_operations:
+    - "Create a new 'User Stories' section if one does not already exist (that's a structural_change)"
+    - "Duplicate the user story into §Executive Summary or §Objective"
+    - "Bundle multiple user stories into one row"
+    - "Use non-canonical formats ('As Sam, I want...' — must be role, not name; 'I need...' — must be 'I want')"
+    - "Reference the source of the story in the text"
+  format_contract:
+    - "Format: 'As a [role], I want [behaviour], so that [outcome]'"
+    - "Role is a user type, never a specific person's name"
+    - "One outcome per story; if more, split into multiple stories"
+  validation_checklist:
+    - "Exactly one user story was added, in the canonical format"
+    - "No new section was created"
+    - "No attribution phrases appear in the story text"
+    - "The role is a user type, not a person name"
+
+update_user_story:
+  description: >
+    Modify a named existing user story.
+  allowed_scope:
+    - "The single named User story field (within a named row, e.g. R-003's User story)"
+  allowed_operations:
+    - "Edit the User story text on the named row only"
+    - "Preserve canonical format throughout the edit"
+  forbidden_operations:
+    - "Modify the Requirement, AC, Importance, or Notes columns of the same row (separate change types)"
+    - "Modify any other row's User story"
+    - "Convert the story into a paragraph or bullet list"
+    - "Add change-tags ([UPDATED], etc.)"
+    - "Reference the source of the change in the story text"
+  format_contract:
+    - "Preserve 'As a [role], I want [behaviour], so that [outcome]' format"
+    - "Maintain the role-based subject; never substitute a person's name"
+  validation_checklist:
+    - "Only the named row's User story field was touched"
+    - "Canonical format is preserved"
+    - "No other columns of the same row were modified"
+    - "No source attribution was added"
+
+update_strategy:
+  description: >
+    Modify content in §Strategy Fit, §Objective, §Core Problem, or §Working Hypothesis.
+    These sections describe WHY the document exists. Edits should be substantive and rare.
+  allowed_scope:
+    - "Exactly one of: §Strategy Fit, §Objective, §Core Problem, or §Working Hypothesis"
+    - "The user must name which one in Phase 1"
+  allowed_operations:
+    - "Replace existing prose in the named subsection with new prose"
+    - "Update the parent-strategy citation if §Strategy Fit"
+    - "Update the hypothesis statement if §Working Hypothesis (must remain one sentence in the 'We believe X will Y because Z' form)"
+  forbidden_operations:
+    - "Touch more than one of the four named subsections in a single change (split into multiple changes)"
+    - "Add a 'Background', 'Context', or 'Additional Rationale' subsection inside any of the four"
+    - "Reference the source of the change inline (no 'per legal', 'after the kickoff meeting')"
+    - "Duplicate the new prose into §Executive Summary unless the user explicitly asked for both edits"
+    - "Add risk language, requirement language, or metric language into a strategy section (cross-section pollution)"
+    - "Convert the section from prose to a bulleted list, or vice versa, unless the user explicitly asked"
+  format_contract:
+    - "§Core Problem: one sentence"
+    - "§Working Hypothesis: one sentence in the 'We believe [user] will [behaviour] because [reason], leading to [outcome]' form"
+    - "§Strategy Fit: must cite the parent strategy or vision doc by link or name"
+    - "Active voice throughout"
+  validation_checklist:
+    - "Only the single named subsection was modified"
+    - "Format contract (one sentence for Core Problem / Hypothesis; citation for Strategy Fit) is satisfied"
+    - "No source attribution was added"
+    - "No content from this change leaked into §Executive Summary, §Requirements, §Risks, or any other section"
+    - "The section type (prose vs bullets) matches the pre-edit form unless an explicit conversion was requested"
+
+update_metrics:
+  description: >
+    Modify content in §Metrics (Launch / Supporting / Guardrail / Graduation Criteria).
+    Used when targets, baselines, MDE, or graduation gates change.
+  allowed_scope:
+    - "One named sub-table or row within §Metrics (Launch Metrics, Supporting Metrics, Guardrail Metrics, or Graduation Criteria)"
+    - "The user must specify which metric (by name) and which fields change"
+  allowed_operations:
+    - "Edit Baseline, Target, MDE, Window, Acceptable Range, or Alert Threshold values on a named metric row"
+    - "Add a new row to Launch / Supporting / Guardrail tables if the user asked for a new metric"
+    - "Add a new bullet to the Graduation Criteria checklist"
+    - "Update Goal column if the user asked to refine the goal statement"
+  forbidden_operations:
+    - "Reformat the Metrics tables (column changes, alignment, header changes)"
+    - "Modify metrics other than the ones named by the user"
+    - "Add metric-related prose to §Objective, §Working Hypothesis, or §Executive Summary unless explicitly requested"
+    - "Invent a baseline or MDE number not provided by the user or derivable from existing data already in the doc"
+    - "Promote a metric across tiers (Supporting → Launch) without an explicit user request"
+    - "Add a 'Why these metrics changed' paragraph"
+    - "Reference the source of the change inline"
+  format_contract:
+    - "Baseline values include unit and date or source where known"
+    - "Target values are absolute or relative changes (e.g. '30.81%' or '+1%'), not vague targets ('improve', 'increase')"
+    - "MDE is expressed at 80% power, p<0.05, with a duration in days"
+    - "Graduation Criteria are checkboxes with concrete conditions, no hedging ('monitor and adjust' is not a criterion)"
+  validation_checklist:
+    - "Only the named metric(s) or named graduation criteria were touched"
+    - "No new sub-table or section was created within §Metrics"
+    - "Numeric values are concrete (no 'TBD', 'around X', 'roughly Y' unless the user explicitly used those)"
+    - "No source attribution appears in the metric definition, baseline, or notes"
+    - "No metric prose leaked into other sections"
+
+add_open_question:
+  description: >
+    Append a new row to §Open Questions.
+    Used when the user surfaces an unresolved question that needs an owner / target / resolution path.
+  allowed_scope:
+    - "§Open Questions table only"
+  allowed_operations:
+    - "Append one new row with Question, Owner, Target, Status (Open), and Resolution (blank or 'pending')"
+  forbidden_operations:
+    - "Modify any existing Open Question row"
+    - "Add a 'Recent Open Questions' subheading or callout"
+    - "Reference the source of the question inline ('flagged by legal', 'asked in the TnS sync')"
+    - "Duplicate the question into §Risks or §Requirements"
+    - "Add multiple questions in one row (split into multiple changes)"
+    - "Auto-populate Resolution with a guess; leave it blank until resolved by the owner"
+  format_contract:
+    - "Question is phrased as an actual question (ends with '?')"
+    - "Owner is a team or role name, not a person name (person names live in §Stakeholder)"
+    - "Target is an ISO date (YYYY-MM-DD) or 'TBD'"
+    - "Status starts at 'Open'"
+  validation_checklist:
+    - "Exactly one new row was added"
+    - "The Question column ends with a '?'"
+    - "Owner is a role or team, not a personal name"
+    - "Resolution is blank or 'pending'"
+    - "No source attribution appears in the Question text"
+
+add_risk:
+  description: >
+    Append a new row to one of the §Risks subtables (User Risks / Platform & Legal Risks / Business Risks).
+    Used when a genuine new risk emerges from the user's input. Must include a real Detection trigger.
+  allowed_scope:
+    - "The single named Risks subtable (User / Platform & Legal / Business)"
+  allowed_operations:
+    - "Append one new row with Risk, Likelihood, Impact, Detection, and Mitigation columns populated"
+  forbidden_operations:
+    - "Add more than one risk per user request unless multiple were explicitly named"
+    - "Invent a Detection threshold not discussed by the user or derivable from existing telemetry"
+    - "Use vague Mitigations ('monitor', 'adjust', 'be ready') — must be a concrete action"
+    - "Reference the source of the risk inline ('flagged by legal', 'per T&S audit')"
+    - "Create a new Risks subsection or chapter (e.g. 'T&S Risks and Mitigation') — that is a structural_change"
+    - "Duplicate the risk into §Open Questions or §Requirements"
+  format_contract:
+    - "Likelihood and Impact each: L / M / H"
+    - "Detection is a measurable signal with a threshold (e.g. 'P95 latency > 30 min', 'User feedback < 3.0/5.0 over 7 days')"
+    - "Mitigation is a concrete action, not a hope"
+  validation_checklist:
+    - "Exactly one new row was added to the named Risks subtable"
+    - "Detection is a measurable threshold, not a vague phrase"
+    - "Mitigation is a concrete action"
+    - "No new Risks subsection or chapter was created"
+    - "No source attribution appears in the risk text"
+
+reconcile_to_template:
+  description: >
+    META change type. Reconcile an existing document's structure against the canonical
+    PRD template. Used when a document has drifted from the template (orphan chapters,
+    missing canonical sections, bloated sections, mis-located content, progressive-disclosure
+    failures) and the user asks to "restructure", "force template structure", "reconcile",
+    or "audit against the template".
+
+    This change type is PROPOSAL-ONLY. It emits a batch Phase 1 proposal whose individual
+    atomic items each route through one of the other DOC_MUSTS change types in their own
+    Phase 2 execute loop. The reconcile_to_template loop itself never touches the document.
+  allowed_scope:
+    - "Read access to the full document and the canonical template at ../prd-writer/references/template.md"
+    - "Each atomic change inside the emitted proposal must classify as one of the other
+       DOC_MUSTS change types (structural_change, update_strategy, update_requirement,
+       update_metrics, add_open_question, add_risk, etc.) and follow that type's contract"
+  allowed_operations:
+    - "Read the canonical template and the current document in full"
+    - "Produce a section-by-section reconciliation table mapping current sections to canonical ones,
+       with verdicts: MATCHES / WRONG_LOCATION / ORPHAN_CHAPTER / BLOATED / MISSING"
+    - "Identify orphan chapters and propose them as structural_change items (absorb into canonical
+       section) or relocate to Appendix subsections"
+    - "Identify bloated canonical sections (e.g. an Objective that contains requirements + AC + edge cases)
+       and propose splits that move content to its rightful canonical home"
+    - "Identify missing canonical subsections and classify each as:
+       (a) CONTENT_AVAILABLE — content exists elsewhere in the document; propose relocation
+       (b) NEEDS_AUTHORING — no context available; propose to ASK the user whether to include"
+    - "Identify progressive-disclosure failures (requirements-level, AC-level, edge-case, or
+       implementation-mechanics content surfacing in framing sections); flag with verbatim quotes"
+    - "Surface critical-content decisions where a relocation would change visibility, audience,
+       or stakeholder read; surface these as explicit questions, not proposed changes"
+  forbidden_operations:
+    - "Author content for any missing canonical subsection without explicit user-provided context.
+       This includes Executive Summary, Working Hypothesis, Strategy Fit, Motivating Data (numbers
+       or verbatim quotes), Kill Switch, Pre-Launch Checklist, Graduation Criteria, Behavior
+       Specification, or any other canonical subsection. Generic templates, inferred problem
+       statements, and 'industry best practice' defaults are all forms of invention."
+    - "Silently include a canonical subsection in the proposal when no context exists for it.
+       The default for NEEDS_AUTHORING subsections is to ASK the user whether to include them."
+    - "Execute any relocation, split, absorption, or content change in this loop. The
+       reconcile_to_template loop is PROPOSAL-ONLY; execution happens via downstream
+       change-type Phase 2 loops after user confirmation."
+    - "Treat the template's full subsection list as mandatory. Only the chapter structure
+       (top-level headings, in template order) is mandatory. Subsections that lack content
+       are SKIPPED in the document, never stubbed with placeholders like [TBD] or [to be added]."
+    - "Generate content from generic patterns, sibling-project examples, or industry conventions
+       when context is missing. The only legitimate response to missing context is ASK."
+    - "Pre-populate sub-headings with placeholder prose ('[TBD]', '[to be added]',
+       '[Working hypothesis goes here]', '[Author the strategy fit citation]')."
+    - "Combine multiple authoring decisions into a single ASK. Each missing subsection
+       gets its own ASK item the user can answer independently (include with content / skip)."
+    - "Skip the critical-content decisions surfacing. If a relocation changes who sees the content
+       first or how the document reads at the stakeholder-skim level, the user must approve the
+       trade-off explicitly."
+  format_contract:
+    - "Reconciliation table: markdown table with columns 'Current section | Verdict | Maps to / fix'"
+    - "Each atomic relocation proposal follows the standard Phase 1 format:
+       [n]. TYPE: <downstream_change_type>
+            Location: <exact section + identifier>
+            Change: <one sentence>
+            Justification: <one sentence linking to the user's reconciliation request>"
+    - "ASK items follow this format:
+       ASK: <canonical subsection name>
+       Current state: <where content exists today, or 'no context in the doc'>
+       Question: <one specific question>
+       Default if no answer: SKIP"
+    - "Critical-content decisions follow this format:
+       DECISION: <one-line topic>
+       Content (verbatim): <quote from current doc>
+       Current location: <section>
+       Candidate canonical homes: <option A / option B with tradeoffs>
+       What changes: <visibility/audience impact>
+       Question: <specific question for the user>"
+    - "The proposal closes with: 'I will not touch the document until you confirm/reject each
+       change AND answer each ASK and DECISION item.'"
+  validation_checklist:
+    - "Every section in the current document was classified in the reconciliation table"
+    - "Every orphan chapter was either mapped to a canonical home or proposed for Appendix"
+    - "Every missing canonical section was classified as CONTENT_AVAILABLE or NEEDS_AUTHORING"
+    - "No NEEDS_AUTHORING item silently includes invented content; each is an ASK to the user"
+    - "Each atomic relocation routes through a downstream DOC_MUSTS change type (no leaf
+       operations executed in reconcile_to_template itself)"
+    - "Progressive-disclosure failures are flagged with verbatim quotes citing section headers"
+    - "Critical-content decisions are surfaced as explicit DECISION items, not silently resolved"
+    - "Only the chapter structure (top-level headings) is enforced; subsection inclusion is
+       per-case based on context availability and user confirmation"
+
+structural_change:
+  description: >
+    Add a new section, remove a section, rename a section, reorder sections, split one section
+    into multiple, or merge sections. The HIGHEST-RISK change type.
+    Cannot be PROPOSED in Phase 1 unless the user EXPLICITLY named the structural change in their request.
+    Cannot be EXECUTED in Phase 2 without a SECOND explicit user confirmation beyond the Phase 1 approval.
+  allowed_scope:
+    - "Only the section(s) the user explicitly named (by exact title) in the request"
+  allowed_operations:
+    - "Add a new section with a user-specified title and an empty or user-specified body"
+    - "Remove a section the user named for removal"
+    - "Rename a section to a user-specified new title"
+    - "Reorder sections per the user's explicit sequence"
+    - "Split one section into two with user-specified titles"
+    - "Merge two sections into one with a user-specified title"
+  forbidden_operations:
+    - "Add ANY structural change the user did not name (no 'while I was at it' additions)"
+    - "Add unsolicited sections inferred from the discussion: 'T&S Risks and Mitigation', 'Commitments', 'Recent Updates', 'Change Log', 'Summary of Edits', 'Pre-intro', 'Context Block', 'Background Information'"
+    - "Reorganise adjacent sections to 'flow better' after the change"
+    - "Renumber, restyle, or rewrite section headers across the document"
+    - "Move content between sections beyond what was explicitly requested"
+    - "Create the section, then populate it with content the user did not provide or approve"
+    - "Execute without a second user confirmation after Phase 1 approval"
+  format_contract:
+    - "New section headers use the same markdown level (e.g. # or ##) as adjacent peer sections"
+    - "New section bodies start empty or with the user-provided content only — never with auto-generated placeholders"
+    - "Renamed sections keep their existing body byte-identical"
+    - "No content from removed sections is silently relocated; if it must move, that is a separate explicit change"
+  validation_checklist:
+    - "The structural change matches the user's exact specification (title, position, body content)"
+    - "No other section was added, removed, renamed, or reordered"
+    - "Adjacent section headers and bodies are byte-identical to the pre-edit version"
+    - "No content was silently moved between sections"
+    - "If a section was added, its body contains only user-approved content (no auto-generated prose)"
+    - "The second user confirmation was received before the edit was executed"

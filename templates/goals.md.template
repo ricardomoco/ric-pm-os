@@ -1,0 +1,68 @@
+# Goals — [Your Name]
+
+This is a template. Copy it to `goals.md` (lowercase) at your workspace root and fill in. The file is **gitignored** in this repo because goals contain quarterly priorities that may be sensitive.
+
+If you fork this OS for your team, **do not** commit your real `goals.md`.
+
+---
+
+## Identity
+
+- **Role:** [e.g. Senior Product Manager]
+- **Team / Tribe:** [e.g. Search Discovery]
+- **Manager:** [name or role]
+- **Tenure in this role:** [start date]
+
+## Quarterly Goals
+
+Replace the placeholders with your own outcome-focused goals. Each goal should have:
+- A clear outcome statement (the metric or capability that changes)
+- A target (numeric where possible)
+- A horizon (which quarter / month)
+
+### Goal 1: [Outcome statement]
+- **Metric:** [primary metric you'd move]
+- **Target:** [baseline → target]
+- **Horizon:** [Qx 20yy]
+- **Why it matters:** [one sentence]
+
+### Goal 2: [Outcome statement]
+- **Metric:** ...
+- **Target:** ...
+- **Horizon:** ...
+- **Why it matters:** ...
+
+### Goal 3: [Outcome statement]
+- **Metric:** ...
+- **Target:** ...
+- **Horizon:** ...
+- **Why it matters:** ...
+
+## Ownership areas
+
+- [Product surface or feature you own]
+- [Another surface]
+- [Cross-functional capability you co-own]
+
+## Current quarter focus
+
+One paragraph describing what you're actively working on this quarter and the single most important outcome you're chasing.
+
+## Stakeholders
+
+| Role | Name | What they care about |
+|---|---|---|
+| Director | [name] | [outcome they're judging you on] |
+| Design Lead | [name] | [aesthetic / UX priorities for this quarter] |
+| Tech Lead | [name] | [technical constraints / debts] |
+| Data Analyst | [name] | [measurement priorities] |
+
+## What the `session-brief` hook needs
+
+The `session-brief.sh` hook surfaces your active goals at session start. To make that work, this file must contain lines matching the pattern:
+
+```
+Goal N: <outcome statement>
+```
+
+The hook greps for `^Goal [0-9]+:` so make sure your goal lines start that way.
