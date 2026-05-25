@@ -5,7 +5,7 @@ Notes for skill authors and contributors who want to extend the `get-started` fl
 ## Step 2 — Identity batch
 
 ### Role
-Affects the default seniority calibration for `feedback-provider`, `pm-writing-standards`, and any skill that surfaces "appropriate for level" advice. A senior PM defaults to terser, more strategic prompts; an APM defaults to scaffolded, more explanatory ones.
+Affects the default seniority calibration for `pm-writing-standards` and any skill that surfaces "appropriate for level" advice. A senior PM defaults to terser, more strategic prompts; an APM defaults to scaffolded, more explanatory ones.
 
 ### Domain
 Affects example framing across all skills. A marketplace PM sees "buyer / seller" examples; a SaaS PM sees "user / admin"; an internal platform PM sees "consumer team / platform team". The OS is genericized but examples calibrate.
@@ -35,8 +35,6 @@ Used to archive unused skill folders into `.claude/skills/_archived/`. Archived 
 - `shared` (voice guide, atlassian config)
 - `pm-writing-standards` (mandatory sub-skill for any prose)
 - `assumption-identifier`, `success-metrics`, `product-discovery-coach`, `prompt-optimizer` (universally useful)
-- `regression-testing-skills` (meta — improves any other skill)
-- `frame0-wireframer` (rarely-used but small footprint)
 
 ## Step 6 — Goals paste
 

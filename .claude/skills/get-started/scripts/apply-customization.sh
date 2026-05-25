@@ -144,15 +144,14 @@ archive_if_unchecked() {
   fi
 }
 
-archive_if_unchecked "writing" prd-writer prd-editor prd-analysis prd-roaster prd-accessibility-requirements one-pager-creator rfc-writer product-vision
+archive_if_unchecked "writing" prd-writer prd-editor prd-roaster prd-accessibility-requirements one-pager-creator product-vision
 archive_if_unchecked "experiments" experiment-creator post-experiment-report
 archive_if_unchecked "research" research-synthesizer ur-survey-creator
-archive_if_unchecked "people" feedback-provider culture-interviewer
 archive_if_unchecked "planning" planning
 archive_if_unchecked "tickets" jira-ticket-writer bug-ticket-creator
 
 # pm-writing-standards, success-metrics, assumption-identifier, product-discovery-coach,
-# regression-testing-skills, prompt-optimizer, frame0-wireframer, get-started, shared
+# prompt-optimizer, get-started, shared
 # are always kept regardless of category selection — they are foundational.
 
 echo ""

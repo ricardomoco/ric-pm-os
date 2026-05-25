@@ -50,20 +50,11 @@
 
   "_comment_hooks": "Lifecycle hooks. All hooks must exist at .claude/hooks/<filename>. Mark them executable: chmod +x .claude/hooks/*.sh",
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          { "type": "command", "command": "bash .claude/hooks/regression-test-stash.sh" }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
           { "type": "command", "command": "python3 .claude/hooks/prose-sweep.py" },
-          { "type": "command", "command": "bash .claude/hooks/regression-test-trigger.sh" },
           { "type": "command", "command": "bash .claude/hooks/auto-stage-pm-edits.sh" }
         ]
       },

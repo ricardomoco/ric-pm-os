@@ -15,7 +15,7 @@ This repo is a public scaffold for an opinionated PM workflow on Claude Code. Co
 - **New skill:** add under `.claude/skills/<skill-name>/SKILL.md`. Follow the structure of an existing skill (frontmatter with `name:` and `description:`, a clear `## When to use` section, phase or routing logic if it's complex).
 - **New hook:** add under `.claude/hooks/<name>.sh` or `.py`. Make it best-effort (always exit 0; never block tool calls). Document the matcher in the file header.
 - **New sub-agent:** add under `.claude/agents/<name>.md` with frontmatter (`name`, `description`, `tools`, `model`, `color`). Sub-agents are for protecting main context — they should return digests, not raw data.
-- **Improvement to an existing skill:** make sure your change does not regress the skill's other outputs. The `regression-testing-skills` meta-skill exists precisely for this; ideally add a fixture under `regression-corpus/` (anonymized).
+- **Improvement to an existing skill:** make sure your change does not regress the skill's other outputs. If the skill has a `regression-corpus/` directory, add a fixture there (anonymized) that captures the failure mode you're fixing.
 
 ## Sanitization rules
 
