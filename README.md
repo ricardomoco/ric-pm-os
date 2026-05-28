@@ -1,6 +1,6 @@
 # PM OS — An Opinionated Product Management System for Claude Code
 
-> **Acknowledgements.** This PM OS is a joint collaboration with [Carlos Ruiz](https://www.linkedin.com/in/carlos-ruiz-cardoso/) — Search PM at Wallapop — and me. Some of the skills, sub-agents, and hooks in this repo were built by Carlos; others by me. The system as a whole is the product of months of paired thinking on what a "Personal OS" for product work actually looks like in practice. Where attribution matters per file, individual `SKILL.md` headers note the original author. Thanks Carlos — this exists in the shape it does because of our back-and-forth.
+> **Acknowledgements.** This PM OS is a joint collaboration with Carlos Ruiz — Search PM at Wallapop — and me. Some of the skills, sub-agents, and hooks in this repo were built by Carlos; others by me. The system as a whole is the product of months of paired thinking on what a "Personal OS" for product work actually looks like in practice. Where attribution matters per file, individual `SKILL.md` headers note the original author. Thanks Carlos — this exists in the shape it does because of our back-and-forth.
 
 A production-grade Product Management workspace built on [Claude Code](https://docs.claude.com/en/docs/claude-code/overview). 18 skills, 11 slash commands, 5 sub-agents, and 7 lifecycle hooks that turn an LLM into a thinking partner for PRDs, experiments, research synthesis, and strategic writing.
 
